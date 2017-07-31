@@ -5,16 +5,21 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
-public class MainWindow extends JFrame implements ActionListener  {
+public class UserMainWindow extends JFrame implements ActionListener  {
 
 	JFrame frame;
 	private JButton botonSeleccionar;
-	
+	private JTextField textField;
+
+
 	String rutaExcell = "";
-	MainWindow(){
+	
+	UserMainWindow(){
 		
 		 JFrame frame = new JFrame();
 		 frame.setBounds(300, 200, 870, 600);
@@ -26,9 +31,25 @@ public class MainWindow extends JFrame implements ActionListener  {
 		 frame.setVisible(true);
 		 
 		 botonSeleccionar = new JButton ("Seleccionar");
-		 botonSeleccionar.setBounds(200, 154, 105, 75);
+		 botonSeleccionar.setBounds(220, 155, 105, 20);
 		 frame.getContentPane().add(botonSeleccionar);
 		 botonSeleccionar.addActionListener(this);
+		 
+		 textField = new JTextField();
+		 textField.setToolTipText("Ruta");
+		 textField.setBounds(15, 155, 200, 20);
+		 frame.getContentPane().add(textField);
+		 textField.setColumns(10);
+		 
+		 
+		 int idUsuarioActual = DBConnection.getSesionID();
+		 String nombreUsuarioActual = DBConnection.getSesionName();
+		 
+		 JLabel usuario = new JLabel("Bienvenido " + nombreUsuarioActual);
+		 usuario.setBounds(700, 15, 200, 20);
+		 frame.getContentPane().add(usuario);
+	
+		 
 	}
 	
 	
@@ -48,6 +69,7 @@ public class MainWindow extends JFrame implements ActionListener  {
 				
 				File fichero = fc.getSelectedFile();
 				rutaExcell = fichero.getAbsolutePath();
+				textField.setText(rutaExcell);
 			}
 			
 		}

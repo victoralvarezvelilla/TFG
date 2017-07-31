@@ -11,6 +11,9 @@ public class DBConnection {
 
 	public static Connection con ;
 	Statement statement;
+	private static int idSesion;
+	private static String nameSesion;
+	private static boolean rolSesion;
 	
 	public void conectar(){
         System.out.println("INICIO DE EJECUCIÓN.");
@@ -50,21 +53,56 @@ public class DBConnection {
 		String user = text;
 		String password = valueOf;
 		boolean correcto = false ;
-		String datoSesion = "";
+		
 		Statement s = con.createStatement();
 	
 		ResultSet rs = con.createStatement().executeQuery("SELECT * FROM usuarios WHERE Passname = '" + user + "' AND Password = '" + password + "' ");
-		
+	
 		if(rs.next()){
-			datoSesion = rs.getString("ID");
+			
+			
 			correcto = true;
 		}
-		
+		setSesionID( rs.getInt("ID"));
+		setSesionName(rs.getString("Nombre"));
+		setSesionRol(rs.getBoolean("Rol"));
 		
 		return correcto;
 	}
-
-
+	
+	public void setSesionRol( boolean r){
+		System.out.println("rol="+r);
+		rolSesion = r;
+		System.out.println(nameSesion);
+	}
+	
+	public static boolean getSesionRol(){
+		
+		return rolSesion;
+	}
+	
+	public void setSesionName( String nombre){
+		System.out.println(nombre);
+		nameSesion = nombre;
+		System.out.println(nameSesion);
+	}
+	
+	public static String getSesionName(){
+		
+		return nameSesion;
+	}
+	
+	
+	public void setSesionID( int i){
+		System.out.println(i);
+		idSesion = i;
+		System.out.println(idSesion);
+	}
+	
+	public static int getSesionID(){
+		System.out.println(idSesion);
+		return idSesion;
+	}
 
 
 

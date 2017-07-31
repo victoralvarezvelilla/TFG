@@ -88,8 +88,11 @@ public class LoginWindow extends JFrame implements ActionListener {
 					if( oDBConection.systemEntry(userField.getText(), String.valueOf(passField.getPassword()))){
 						JOptionPane.showMessageDialog(null, "Usuario correcto");
 						
-						MainWindow menu = new MainWindow();
-
+						if (DBConnection.getSesionRol() == false){
+							AdminWindowMenu menuAdministrador = new AdminWindowMenu();
+						}else {
+							UserMainWindow menu = new UserMainWindow();
+						}
 						
 
 					} else {
