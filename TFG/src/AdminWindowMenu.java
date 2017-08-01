@@ -13,7 +13,7 @@ public class AdminWindowMenu extends JFrame implements ActionListener {
 	
 	AdminWindowMenu(){
 		
-		 JFrame frame = new JFrame();
+		 frame = new JFrame();
 		 frame.setBounds(300, 200, 350, 100);
 		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 frame.setLocationRelativeTo(null);
@@ -38,6 +38,14 @@ public class AdminWindowMenu extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		
+		if(arg0.getSource() == botonAplicacion) {
+			UserMainWindow menu = new UserMainWindow();	
+			frame.dispose();
+		}
+		if(arg0.getSource() == botonAdministrar) {
+			AdminMainMenu menuAdministrador = new AdminMainMenu();	
+			frame.dispose();
+		}
 	}
 
 }

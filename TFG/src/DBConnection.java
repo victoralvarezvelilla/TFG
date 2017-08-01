@@ -104,7 +104,28 @@ public class DBConnection {
 		return idSesion;
 	}
 
-
+	static void rellenarTabla(){
+		 
+        try {
+            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM usuarios");
+            while(rs.next()){
+                Object[] fila = new Object[4];//Creamos un Objeto con tantos parámetros como datos retorne cada fila 
+                                              // de la consulta
+                fila[0] = rs.getString("ID"); //Lo que hay entre comillas son los campos de la base de datos
+                fila[1] = rs.getString("Nombre");
+                fila[2] = rs.getString("Apellidos");
+                fila[3] = rs.getBoolean("Rol");
+                AdminMainMenu.aniadirFila(fila);// Añade una fila al final del modelo de la tabla
+            }
+ 
+            AdminMainMenu.actualizarTabla();//Actualiza la tabla
+ 
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+ 
+    }
 
 	
 }

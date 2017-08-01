@@ -34,7 +34,7 @@ public class LoginWindow extends JFrame implements ActionListener {
 
 	 void runLogin() {
 		
-		 JFrame frame = new JFrame();
+		 frame = new JFrame();
 		 frame.setBounds(100, 100, 570, 400);
 		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 frame.setLocationRelativeTo(null);
@@ -90,8 +90,10 @@ public class LoginWindow extends JFrame implements ActionListener {
 						
 						if (DBConnection.getSesionRol() == false){
 							AdminWindowMenu menuAdministrador = new AdminWindowMenu();
+							frame.dispose();
 						}else {
 							UserMainWindow menu = new UserMainWindow();
+							frame.dispose();
 						}
 						
 
