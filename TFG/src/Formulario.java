@@ -2,10 +2,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
@@ -14,6 +16,9 @@ public class Formulario extends JFrame  {
 	
 	JFrame frame;
 	private JButton botonAceptar;
+	private JButton botonCancelar;
+	private JRadioButton radio;
+	int rol;
 
 	Formulario(){
 		
@@ -130,25 +135,70 @@ public class Formulario extends JFrame  {
 		 etiqueta5.setBounds(50, 250, 100, 14);
 		 frame.getContentPane().add(etiqueta5);
 		
-		 JRadioButton radio = new JRadioButton("Administrador");
+		 radio = new JRadioButton("Administrador");
 		 radio.setBounds(160, 250, 150, 20);
 		 frame.getContentPane().add(radio);
+	
+		 System.out.println("el rol es: "+ rol);
+	
 		 
 		 botonAceptar = new JButton("Aceptar");
-		 botonAceptar.setBounds(160, 280, 100, 50);
+		 botonAceptar.setBounds(100, 280, 100, 50);
 		 frame.getContentPane().add(botonAceptar);
 		 botonAceptar.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Boton funciona");
-				
-			}
-		});
-		 
+
+			 @Override
+			 public void actionPerformed(ActionEvent e) {
+
+				 if (nombreTF.getText().equals("")){
+					 JOptionPane.showMessageDialog(null, "Ingrese el nombre");
+					 return;
+				 }
+				 if (passnameTF.getText().equals("")){
+					 JOptionPane.showMessageDialog(null, "Ingrese el nombre de usuario");
+					 return;
+				 }
+				 if (passwordTF.getText().equals("")){
+					 JOptionPane.showMessageDialog(null, "Ingrese la contraseña");
+					 return;
+				 }
+
+				 if (radio.isSelected() ){
+					 System.out.println("RADIO");
+					 rol = 0;
+				 } else {
+					 rol = 1;
+				 }
+				 try {
+					 DBConnection.aniadirUsuario(nombreTF.getText(), apellidosTF.getText(), passnameTF.getText() , passnameTF.getText() , rol);
+					 AdminMainMenu.actualizarTabla();//Actualiza la tabla
+					 DBConnection.rellenarTabla();
+					 AdminMainMenu.vaciarCombo();
+					 AdminMainMenu.llenarCombo();
+					 frame.dispose();
+				 } catch (SQLException e1) {
+					 // TODO Auto-generated catch block
+					 JOptionPane.showMessageDialog(null, "Registro no agregado: Passname Incorrecto");
+					 e1.printStackTrace();
+				 }
+
+			 }
+		 });
+
+		 botonCancelar = new JButton("Cancelar");
+		 botonCancelar.setBounds(280, 280, 100, 50);
+		 frame.getContentPane().add(botonCancelar);
+		 botonCancelar.addActionListener(new ActionListener() {
+
+			 @Override
+			 public void actionPerformed(ActionEvent e) {
+				 // TODO Auto-generated method stub
+				 frame.dispose();
+			 }
+
+		 });
+
 	}
-
-
 	
 
 }

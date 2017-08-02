@@ -105,7 +105,6 @@ public class DBConnection {
 	}
 
 	static void rellenarTabla(){
-		 
         try {
             ResultSet rs = con.createStatement().executeQuery("SELECT * FROM usuarios");
             while(rs.next()){
@@ -114,11 +113,16 @@ public class DBConnection {
                 fila[0] = rs.getString("ID"); //Lo que hay entre comillas son los campos de la base de datos
                 fila[1] = rs.getString("Nombre");
                 fila[2] = rs.getString("Apellidos");
-                fila[3] = rs.getBoolean("Rol");
+                if( rs.getInt("Rol") == 0){
+                	fila[3] = "Administrador";
+                }else {
+                	fila[3] = "Usuario";
+                }
+                
                 AdminMainMenu.aniadirFila(fila);// Añade una fila al final del modelo de la tabla
             }
  
-            AdminMainMenu.actualizarTabla();//Actualiza la tabla
+         //   
  
         } catch (SQLException e) {
             // TODO Auto-generated catch block
@@ -126,6 +130,75 @@ public class DBConnection {
         }
  
     }
+
+
+
+	public static void aniadirUsuario(String nombre, String apellidos, String passname, String password, int rol) throws SQLException {
+		// TODO Auto-generated method stub
+		String sentencia;
+		Statement st = con.createStatement();
+		int r;
+		
+	
+		sentencia = "insert into usuarios(Nombre, Apellidos, Rol, Passname, Password) values ('"+nombre+"','"+apellidos+"','"+rol+"','"+passname+"','"+password+"')";
+		r = st.executeUpdate(sentencia);
+		JOptionPane.showMessageDialog(null, "Usuario Creado");
+		
+	}
+	
+	public static String[] llenar_combo() {
+		String sentencia;
+		sentencia = "SELECT * FROM usuarios WHERE rol='1' ";
+		String [] combo = null;
+		int i = 0;
+		try {
+			ResultSet rs =  con.createStatement().executeQuery(sentencia);
+			
+			
+			while (rs.next()){
+				i= i+1;
+			//	System.out.println(rs.getString("Nombre")+"While1");
+			}
+			rs.beforeFirst();
+			combo = new String [i];
+			i = 0;
+			while (rs.next()){	
+		//		System.out.println(rs.getString("Nombre") +"While2");
+				
+				combo[i] = rs.getString("Nombre");
+				i = i+1;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return combo;
+		
+		
+		
+		
+	}
+
+
+
+	public static void eliminarUsuario(String nombre) {
+		
+		try {
+			Statement st = con.createStatement();
+			int r = st.executeUpdate("delete from usuarios where Nombre='"+nombre+"'");
+			AdminMainMenu.vaciarCombo();
+			AdminMainMenu.llenarCombo();
+			AdminMainMenu.actualizarTabla();
+			rellenarTabla();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
 
 	
 }

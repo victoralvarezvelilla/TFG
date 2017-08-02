@@ -1,9 +1,14 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -11,11 +16,14 @@ import javax.swing.table.DefaultTableModel;
 
 public class AdminMainMenu extends JFrame implements ActionListener {
 
-	JFrame frame;
+	static JFrame frame;
 	private static JTable table;
 	private static DefaultTableModel modelo;
 	private JButton botonAniadir;
+	private JButton botonEliminar;
+	private static DefaultComboBoxModel comboEliminar;
 	
+	private static JComboBox combo;
 	AdminMainMenu() {
 		 JFrame frame = new JFrame();
 		 frame.setBounds(300, 200, 870, 600);
@@ -30,6 +38,19 @@ public class AdminMainMenu extends JFrame implements ActionListener {
 		 botonAniadir.setBounds(550, 100, 150, 50);
 		 frame.getContentPane().add(botonAniadir);
 		 botonAniadir.addActionListener(this);
+		 
+		 comboEliminar = new DefaultComboBoxModel();
+		 combo = new JComboBox();
+		 combo.setBounds(200, 400, 100, 50);
+		 frame.getContentPane().add(combo);
+		 combo.setModel(comboEliminar);
+		
+		 botonEliminar = new JButton("Eliminar Usuarios");
+		 botonEliminar.setBounds(550, 400, 150, 50);
+		 frame.getContentPane().add(botonEliminar);
+		 botonEliminar.addActionListener(this);
+		
+		 llenarCombo();
 		 
 		 
 		 String nombreUsuarioActual = DBConnection.getSesionName();
@@ -52,7 +73,7 @@ public class AdminMainMenu extends JFrame implements ActionListener {
 		 modelo.addColumn("ID");
 		 modelo.addColumn("Nombre"); //Añadimos las columnas a la tabla (tantas como queramos)
 		 modelo.addColumn("Apellidos");
-		 modelo.addColumn("Usuario común");
+		 modelo.addColumn("Nivel ");
 		  
 		 DBConnection.rellenarTabla(); //Llamamos al método que rellena la tabla con los datos de la base de datos
 		  
@@ -63,11 +84,25 @@ public class AdminMainMenu extends JFrame implements ActionListener {
 	
 	}
 	
+	static void llenarCombo(){
+		
+		 comboEliminar.addElement("---Lista Usuarios---");
+		 String [] listaUsuarios = DBConnection.llenar_combo();
+		 System.out.println(listaUsuarios[0]);
+		 System.out.println(listaUsuarios[1]);
+		 for (int i= 0; i< listaUsuarios.length; i++){
+			 comboEliminar.addElement(listaUsuarios[i]);
+		 }
+	}
+	static void vaciarCombo(){
+		combo.removeAllItems();
+	}
+	
 	static void aniadirFila(Object [] fila){
 		modelo.addRow(fila);
 	}
 	static void actualizarTabla(){
-		table.updateUI();
+		while(modelo.getRowCount() > 0) modelo.removeRow(0);
 	}
 	
 	@Override
@@ -76,6 +111,15 @@ public class AdminMainMenu extends JFrame implements ActionListener {
 		if(e.getSource() == botonAniadir) {
 			Formulario formulario = new Formulario();
 		}
+		if(e.getSource() == botonEliminar){
+			String nombre = (String) combo.getSelectedItem();
+			if( nombre.equals("---Lista Usuarios---")){
+				JOptionPane.showMessageDialog(null, "Elija un usuario");
+				return;
+			}
+			DBConnection.eliminarUsuario(nombre);
+		}
 	}
+	
 
 }
