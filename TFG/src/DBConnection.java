@@ -60,13 +60,14 @@ public class DBConnection {
 	
 		if(rs.next()){
 			
-			
 			correcto = true;
+			
+			setSesionID( rs.getInt("ID"));
+			setSesionName(rs.getString("Nombre"));
+			setSesionRol(rs.getBoolean("Rol"));
 		}
-		setSesionID( rs.getInt("ID"));
-		setSesionName(rs.getString("Nombre"));
-		setSesionRol(rs.getBoolean("Rol"));
 		
+
 		return correcto;
 	}
 	
