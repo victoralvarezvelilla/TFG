@@ -1,8 +1,12 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -10,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -17,6 +22,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -28,12 +37,22 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 
 	JFrame frame;
 	private JButton botonSeleccionar;
+	private JButton botonCrearExcell;
 	private JTextField textField;
 	private FileInputStream file;
 	private Workbook wb;
 	private static JTable table;
 	private static DefaultTableModel modelo;
+	private HSSFWorkbook oWB;
+	private HSSFSheet hoja1;
+	private FileOutputStream archivoSalida;
+	private int contadorColumna = 0;
 
+	private String [] columnaAniadir;
+	private String [] titulos;
+	private String [] nombres;
+	private Sheet pagina;
+	
 	String rutaExcell = "";
 	
 	UserMainWindow(){
@@ -52,6 +71,12 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 		 frame.getContentPane().add(botonSeleccionar);
 		 botonSeleccionar.addActionListener(this);
 		 
+		 botonCrearExcell = new JButton("Componer");
+		 botonCrearExcell.setBounds(420, 250 , 105, 20);
+		 botonCrearExcell.setVisible(false);
+		 frame.getContentPane().add(botonCrearExcell);
+		 botonCrearExcell.addActionListener(this);
+		 
 		 textField = new JTextField();
 		 textField.setToolTipText("Ruta");
 		 textField.setBounds(15, 155, 200, 20);
@@ -61,6 +86,9 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 		 
 		 int idUsuarioActual = DBConnection.getSesionID();
 		 String nombreUsuarioActual = DBConnection.getSesionName();
+		 
+		 oWB = new HSSFWorkbook();
+		 hoja1 = oWB.createSheet("hoja 1");
 		 
 		 JLabel usuario = new JLabel("Bienvenido " + nombreUsuarioActual);
 		 usuario.setBounds(700, 15, 200, 20);
@@ -89,6 +117,12 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		
+		
+		/*Creamos el workbook de salida */
+		
+		botonCrearExcell.setVisible(true);
+		
 		if(e.getSource() == botonSeleccionar) {
 			JFileChooser fc = new JFileChooser();
 			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -102,6 +136,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 				File fichero = fc.getSelectedFile();
 				rutaExcell = fichero.getAbsolutePath();
 				textField.setText(rutaExcell);
+			
 				
 				
 				FileInputStream file = null;
@@ -120,9 +155,9 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				Sheet pagina = wb.getSheetAt(0);
-				String [] titulos = new String[pagina.getRow(0).getLastCellNum()+1];
-				
+				pagina = wb.getSheetAt(0);
+				titulos = new String[pagina.getRow(0).getLastCellNum()+1];
+				columnaAniadir = new String[pagina.getRow(0).getLastCellNum()+1];
 			
 				DataFormatter formatter = new DataFormatter();
 				
@@ -134,23 +169,117 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 				}
 				
 			
-				String [] nombres = new String[pagina.getLastRowNum()+1];
+				nombres = new String[pagina.getLastRowNum()+1];
 				for (int j = 1; j< pagina.getLastRowNum()+1; j++){
 					Row fila = pagina.getRow(j);
 					nombres[j-1] = fila.getCell(0).getStringCellValue(); 
 				}
 				String[] anonimizados =	anonimizar(nombres);
+				try {
+					crearNuevoExcell(anonimizados);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				for ( int k = 1; k < titulos.length; k++){
 					Vector<String> v = new Vector<String>();
 					v.add(titulos[k]);
 					modelo.addRow(v);
 				}
-				String[] seleciones = String.valueOf(table.getSelectedRow());
-				
+			
+			
 			}
 			
 		}
+		if(e.getSource() == botonCrearExcell) {
+			
+			String strNombreArchivo = "C:/Users/Usuario/Desktop/TFG/prueba.xls";
+			File objFile = new File(strNombreArchivo);
+			try {
+				archivoSalida = new FileOutputStream(objFile);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				oWB.write(archivoSalida);
+				JOptionPane.showMessageDialog(null, "Excel Generado con exito");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				archivoSalida.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		table.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			
+				int columna = table.rowAtPoint(e.getPoint());
+				int opcion = JOptionPane.showConfirmDialog(null, "¿Añadir columna a la matriz?");
+				/* SI = 0 NO = 1 CANCEL = 2 */
+				if (opcion == 0){
+					
+					for (int i = 1; i< pagina.getLastRowNum()+1; i++){
+						Row fila = pagina.getRow(i);
+						String celda = fila.getCell(columna+1).toString();
+						columnaAniadir[i-1] = celda; 
+						System.out.println(columnaAniadir[i-1]);
+					
+					}
+					try {
+						crearNuevoExcell(columnaAniadir);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		
+	}
+
+
+
+	private void crearNuevoExcell(String[] columna) throws IOException {
+	
+		for( int i = 0; i< columna.length; i++){
+			HSSFRow fila = hoja1.createRow(i);
+			HSSFCell celda = fila.createCell(contadorColumna);
+			celda.setCellValue(columna[i]);
+			
+		}
+		contadorColumna = contadorColumna +1;
+
 	}
 
 
