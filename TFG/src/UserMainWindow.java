@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -47,10 +49,13 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 	private HSSFSheet hoja1;
 	private FileOutputStream archivoSalida;
 	private int contadorColumna = 0;
+	private int contador = 0;
 
 	private String [] columnaAniadir;
+	private Set<Integer> indices;
 	private String [] titulos;
 	private String [] nombres;
+	private String[] anonimizados;
 	private Sheet pagina;
 	
 	String rutaExcell = "";
@@ -110,6 +115,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 			 scroll.setBounds(100, 300, 700, 200);
 			 frame.getContentPane().add(scroll);
 		 
+			 indices = new HashSet<Integer>();
 			 
 			 /*Iniciamos con el modelo 1 */
 		
@@ -150,7 +156,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 					Row fila = pagina.getRow(j);
 					nombres[j-1] = fila.getCell(0).getStringCellValue(); 
 				}
-				String[] anonimizados =	anonimizar(nombres);
+				anonimizados =	anonimizar(nombres);
 				try {
 					crearNuevoExcell(anonimizados);
 				} catch (IOException e1) {
@@ -165,6 +171,66 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 				}
 			
 			
+				table.addMouseListener(new MouseListener() {
+					
+					@Override
+					public void mouseReleased(MouseEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void mousePressed(MouseEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void mouseExited(MouseEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void mouseClicked(MouseEvent e) {
+					
+						int columna = table.rowAtPoint(e.getPoint());
+						int opcion = JOptionPane.showConfirmDialog(null, "¿Añadir columna a la matriz?");
+						
+						aniadirColumna(columna);
+						//indices.add(columna);
+						/* SI = 0 NO = 1 CANCEL = 2 */
+						if (opcion == 0){
+							
+							for (int i = 1; i< pagina.getLastRowNum()+1; i++){
+								Row fila = pagina.getRow(i);
+								String celda = fila.getCell(columna+1).toString();
+								columnaAniadir[i-1] = celda; 
+								//System.out.println(columnaAniadir[i-1]);
+							
+							}
+							try {
+								crearNuevoExcell(columnaAniadir);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}
+
+					private void aniadirColumna(int columna) {
+						// TODO Auto-generated method stub
+						columna = columna +1;
+						indices.add(columna);
+					}
+				});
+				
 			}
 			 
 		 
@@ -273,59 +339,10 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 				e1.printStackTrace();
 			}*/
 			
-			UserNewValuesWindow menuValores = new UserNewValuesWindow(wb);
+			UserNewValuesWindow menuValores = new UserNewValuesWindow(wb, anonimizados,indices );
 			
 		}
-		table.addMouseListener(new MouseListener() {
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			
-				int columna = table.rowAtPoint(e.getPoint());
-				int opcion = JOptionPane.showConfirmDialog(null, "¿Añadir columna a la matriz?");
-				/* SI = 0 NO = 1 CANCEL = 2 */
-				if (opcion == 0){
-					
-					for (int i = 1; i< pagina.getLastRowNum()+1; i++){
-						Row fila = pagina.getRow(i);
-						String celda = fila.getCell(columna+1).toString();
-						columnaAniadir[i-1] = celda; 
-						System.out.println(columnaAniadir[i-1]);
-					
-					}
-					try {
-						crearNuevoExcell(columnaAniadir);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-		});
+	
 		
 	}
 

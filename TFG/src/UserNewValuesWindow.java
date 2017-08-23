@@ -24,7 +24,7 @@ public class UserNewValuesWindow extends JFrame {
 	private Sheet pagina;
 	private Workbook workb;
 	
-	UserNewValuesWindow(Workbook wb) {
+	UserNewValuesWindow(Workbook wb, String[] anonimizados, Set<Integer> indices) {
 
 		frame = new JFrame();
 		frame.setBounds(300, 200, 870, 600);
@@ -49,6 +49,7 @@ public class UserNewValuesWindow extends JFrame {
 			       
 			   }
 			};
+		
 			 
 			 JScrollPane scroll = new JScrollPane(); 
 			 table = new JTable(modelo); //Metemos el modelo dentro de la tabla
@@ -60,12 +61,18 @@ public class UserNewValuesWindow extends JFrame {
 			 frame.getContentPane().add(scroll);
 			 
 			 	Set<String> set = new HashSet<String>();
-				for (int i = 8; i< pagina.getLastRowNum()+1; i++){
+				for (int i = 1; i< pagina.getLastRowNum()+1; i++){
 					Row fila = pagina.getRow(i);
 					for (int j = 0; j < fila.getLastCellNum(); j++){
-						String valor = fila.getCell(j).toString();
-						System.out.println(valor);
-						set.add(valor);
+						for(Iterator ite = indices.iterator(); ite.hasNext();){
+							int columna = (Integer)ite.next();
+							if(columna == j){
+								String valor = fila.getCell(j).toString();
+								//	System.out.println(valor);
+								set.add(valor);
+							}
+						
+						}
 					}
 				}
 			
