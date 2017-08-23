@@ -1,5 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -103,7 +104,7 @@ public class LoginWindow extends JFrame implements ActionListener {
 						passField.setText("");
 					}
 				}
-			} catch (SQLException e1) {
+			} catch (SQLException | FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				
 				e1.printStackTrace();

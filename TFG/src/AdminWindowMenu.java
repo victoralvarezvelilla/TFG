@@ -1,5 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -39,7 +40,12 @@ public class AdminWindowMenu extends JFrame implements ActionListener {
 		// TODO Auto-generated method stub
 		
 		if(arg0.getSource() == botonAplicacion) {
-			UserMainWindow menu = new UserMainWindow();	
+			try {
+				UserMainWindow menu = new UserMainWindow();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 			frame.dispose();
 		}
 		if(arg0.getSource() == botonAdministrar) {

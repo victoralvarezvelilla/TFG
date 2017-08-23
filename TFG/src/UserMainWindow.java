@@ -55,7 +55,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 	
 	String rutaExcell = "";
 	
-	UserMainWindow(){
+	UserMainWindow() throws FileNotFoundException{
 		
 		 JFrame frame = new JFrame();
 		 frame.setBounds(300, 200, 870, 600);
@@ -73,15 +73,15 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 		 
 		 botonCrearExcell = new JButton("Componer");
 		 botonCrearExcell.setBounds(420, 250 , 105, 20);
-		 botonCrearExcell.setVisible(false);
 		 frame.getContentPane().add(botonCrearExcell);
 		 botonCrearExcell.addActionListener(this);
+		 botonCrearExcell.setVisible(true);
 		 
-		 textField = new JTextField();
+	/*	 textField = new JTextField();
 		 textField.setToolTipText("Ruta");
 		 textField.setBounds(15, 155, 200, 20);
 		 frame.getContentPane().add(textField);
-		 textField.setColumns(10);
+		 textField.setColumns(10);*/
 		 
 		 
 		 int idUsuarioActual = DBConnection.getSesionID();
@@ -110,45 +110,21 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 			 scroll.setBounds(100, 300, 700, 200);
 			 frame.getContentPane().add(scroll);
 		 
-	}
-	
-	
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+			 
+			 /*Iniciamos con el modelo 1 */
 		
-		
-		/*Creamos el workbook de salida */
-		
-		botonCrearExcell.setVisible(true);
-		
-		if(e.getSource() == botonSeleccionar) {
-			JFileChooser fc = new JFileChooser();
-			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.xlsx", "xlsx");
-			fc.setFileFilter(filtro);
-			
-			int seleccion = fc.showOpenDialog(this);
-			
-			if (seleccion == JFileChooser.APPROVE_OPTION){
-				
-				File fichero = fc.getSelectedFile();
-				rutaExcell = fichero.getAbsolutePath();
-				textField.setText(rutaExcell);
-			
 				
 				
 				FileInputStream file = null;
 				try {
-					file = new FileInputStream(new File(rutaExcell));
+					file = new FileInputStream(new File("C:/Users/Usuario/Desktop/TFG/EX1.xlsx"));
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				
-				@SuppressWarnings("resource")
-				Workbook wb = null;
+				//@SuppressWarnings("resource")
+				wb = null;
 				try {
 					wb = new XSSFWorkbook(file);
 				} catch (IOException e1) {
@@ -156,12 +132,12 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 					e1.printStackTrace();
 				}
 				pagina = wb.getSheetAt(0);
-				titulos = new String[pagina.getRow(0).getLastCellNum()+1];
+				titulos = new String[pagina.getRow(0).getLastCellNum()-3];
 				columnaAniadir = new String[pagina.getRow(0).getLastCellNum()+1];
 			
 				DataFormatter formatter = new DataFormatter();
 				
-				for (int i = 1; i<pagina.getRow(0).getLastCellNum()+1; i++ ){
+				for (int i = 1; i<pagina.getRow(0).getLastCellNum()-3; i++ ){
 
 					String celda = pagina.getRow(0).getCell(i-1).toString();
 					titulos[i-1] = celda;
@@ -181,6 +157,88 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			
+				for ( int k = 1; k < titulos.length; k++){
+					Vector<String> v = new Vector<String>();
+					v.add(titulos[k]);
+					modelo.addRow(v);
+				}
+			
+			
+			}
+			 
+		 
+	
+	
+	
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+		
+		/*Creamos el workbook de salida */
+		
+		
+		
+		if(e.getSource() == botonSeleccionar) {
+			JFileChooser fc = new JFileChooser();
+			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.xlsx", "xlsx");
+			fc.setFileFilter(filtro);
+			
+			int seleccion = fc.showOpenDialog(this);
+			
+			if (seleccion == JFileChooser.APPROVE_OPTION){
+				
+				while(modelo.getRowCount() > 0) modelo.removeRow(0);
+				File fichero = fc.getSelectedFile();
+				rutaExcell = fichero.getAbsolutePath();
+			
+				
+				FileInputStream file = null;
+				try {
+					file = new FileInputStream(new File(rutaExcell));
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				//@SuppressWarnings("resource")
+				wb = null;
+				try {
+					wb = new XSSFWorkbook(file);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				pagina = wb.getSheetAt(0);
+				titulos = new String[pagina.getRow(0).getLastCellNum()-3];
+				columnaAniadir = new String[pagina.getRow(0).getLastCellNum()+1];
+			
+				DataFormatter formatter = new DataFormatter();
+				
+				for (int i = 1; i<pagina.getRow(0).getLastCellNum()-3; i++ ){
+
+					String celda = pagina.getRow(0).getCell(i-1).toString();
+					titulos[i-1] = celda;
+
+				}
+				
+			
+				nombres = new String[pagina.getLastRowNum()+1];
+				for (int j = 1; j< pagina.getLastRowNum()+1; j++){
+					Row fila = pagina.getRow(j);
+					nombres[j-1] = fila.getCell(0).getStringCellValue(); 
+				}
+				String[] anonimizados =	anonimizar(nombres);
+				try {
+					crearNuevoExcell(anonimizados);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			
 				for ( int k = 1; k < titulos.length; k++){
 					Vector<String> v = new Vector<String>();
 					v.add(titulos[k]);
@@ -192,7 +250,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 			
 		}
 		if(e.getSource() == botonCrearExcell) {
-			
+			/*
 			String strNombreArchivo = "C:/Users/Usuario/Desktop/TFG/prueba.xls";
 			File objFile = new File(strNombreArchivo);
 			try {
@@ -213,7 +271,10 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
+			}*/
+			
+			UserNewValuesWindow menuValores = new UserNewValuesWindow(wb);
+			
 		}
 		table.addMouseListener(new MouseListener() {
 			
