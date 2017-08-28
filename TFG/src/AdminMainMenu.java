@@ -2,6 +2,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -16,47 +17,62 @@ import javax.swing.table.DefaultTableModel;
 
 public class AdminMainMenu extends JFrame implements ActionListener {
 
-	static JFrame frame;
+	private JFrame frame;
 	private static JTable table;
 	private static DefaultTableModel modelo;
 	private JButton botonAniadir;
 	private JButton botonEliminar;
+	private JButton botonMatrices;
+	private JButton botonCerrar;
+	
 	private static DefaultComboBoxModel comboEliminar;
 	
 	private static JComboBox combo;
 	AdminMainMenu() {
-		 JFrame frame = new JFrame();
-		 frame.setBounds(300, 200, 870, 600);
-		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		 frame.setLocationRelativeTo(null);
-		 frame.setTitle("Menu de Administración de usuarios ");
-		 frame.getContentPane().setLayout(null);
-		 frame.setResizable(false);
-		 frame.setVisible(true);
+		frame = new JFrame();
+		frame.setBounds(300, 200, 650, 400);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.setTitle("Menu de Administración de usuarios ");
+		frame.getContentPane().setLayout(null);
+		frame.setResizable(false);
+		frame.setVisible(true);
 		 
 		 botonAniadir = new JButton ("Añadir Usuarios");
-		 botonAniadir.setBounds(550, 100, 150, 50);
+		 botonAniadir.setBounds(485, 150, 150, 30);
 		 frame.getContentPane().add(botonAniadir);
 		 botonAniadir.addActionListener(this);
 		 
 		 comboEliminar = new DefaultComboBoxModel();
 		 combo = new JComboBox();
-		 combo.setBounds(200, 400, 100, 50);
+		 combo.setBounds(100, 250, 100, 50);
 		 frame.getContentPane().add(combo);
 		 combo.setModel(comboEliminar);
 		
 		 botonEliminar = new JButton("Eliminar Usuarios");
-		 botonEliminar.setBounds(550, 400, 150, 50);
+		 botonEliminar.setBounds(250, 250, 150, 30);
 		 frame.getContentPane().add(botonEliminar);
 		 botonEliminar.addActionListener(this);
-		
+		 
+		 botonMatrices = new JButton("Matrices");
+		 botonMatrices.setBounds(5, 20 , 105 ,20);
+		 frame.getContentPane().add(botonMatrices);
+		 botonMatrices.addActionListener(this);
+		 botonMatrices.setVisible(true);
+		 
+		 botonCerrar = new JButton("Salir");
+		 botonCerrar.setBounds(500, 20, 100, 30);
+		 frame.getContentPane().add(botonCerrar);
+		 botonCerrar.addActionListener(this);
+		 
+	
 		 llenarCombo();
 		 
 		 
 		 String nombreUsuarioActual = DBConnection.getSesionName();
 
 		 JLabel usuario = new JLabel("Bienvenido " + nombreUsuarioActual);
-		 usuario.setBounds(700, 15, 200, 20);
+		 usuario.setBounds(500, 57, 200, 20);
 		 frame.getContentPane().add(usuario);
 		 
 		 /*Tabla */
@@ -79,7 +95,7 @@ public class AdminMainMenu extends JFrame implements ActionListener {
 		  
 
 		 scroll.setViewportView(table);
-		 scroll.setBounds(100, 0, 400, 200);
+		 scroll.setBounds(120, 0, 350, 200);
 		 frame.getContentPane().add(scroll);
 	
 	}
@@ -88,8 +104,6 @@ public class AdminMainMenu extends JFrame implements ActionListener {
 		
 		 comboEliminar.addElement("---Lista Usuarios---");
 		 String [] listaUsuarios = DBConnection.llenar_combo();
-		 System.out.println(listaUsuarios[0]);
-		 System.out.println(listaUsuarios[1]);
 		 for (int i= 0; i< listaUsuarios.length; i++){
 			 comboEliminar.addElement(listaUsuarios[i]);
 		 }
@@ -110,6 +124,20 @@ public class AdminMainMenu extends JFrame implements ActionListener {
 		// TODO Auto-generated method stub
 		if(e.getSource() == botonAniadir) {
 			Formulario formulario = new Formulario();
+		}
+		
+		if(e.getSource() == botonCerrar) {
+			DBConnection.desconectar();
+			frame.dispose();
+		}
+		if(e.getSource() == botonMatrices){
+			 try {
+				UserMainWindow menu= new UserMainWindow();
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			frame.dispose();
 		}
 		if(e.getSource() == botonEliminar){
 			String nombre = (String) combo.getSelectedItem();

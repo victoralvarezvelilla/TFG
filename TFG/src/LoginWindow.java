@@ -36,7 +36,7 @@ public class LoginWindow extends JFrame implements ActionListener {
 	 void runLogin() {
 		
 		 frame = new JFrame();
-		 frame.setBounds(100, 100, 570, 400);
+		 frame.setBounds(100, 100, 370, 200);
 		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 frame.setLocationRelativeTo(null);
 		 frame.setTitle("Login");
@@ -45,25 +45,27 @@ public class LoginWindow extends JFrame implements ActionListener {
 		 frame.setVisible(true);
 
 		 JLabel userLabel = new JLabel("Usuario: ");
-		 userLabel.setBounds(80, 120, 86, 14);
+		 userLabel.setBounds(80, 30, 86, 14);
 		 frame.getContentPane().add(userLabel);
 
 		 JLabel passLabel = new JLabel("Contraseña: ");
-		 passLabel.setBounds(59, 170, 86, 14);
+		 passLabel.setBounds(59, 60, 86, 14);
 		 frame.getContentPane().add(passLabel);
 		 
 		 userField = new JTextField();
-		 userField.setBounds(150, 115, 176, 25);
+		 userField.setBounds(150, 30, 176, 25);
 		 frame.getContentPane().add(userField);
 		 userField.setColumns(20);
+		 userField.setVisible(true);
 
 		 passField = new JPasswordField();
-		 passField.setBounds(150, 165, 176, 25);
+		 passField.setBounds(150, 60, 176, 25);
 		 frame.getContentPane().add(passField);
 		 passField.setColumns(20);
+		 passField.setVisible(true);
 
 		 entryButton = new JButton("Entrar");
-		 entryButton.setBounds(170, 200, 89, 23);
+		 entryButton.setBounds(170, 100, 89, 23);
 		 frame.getContentPane().add(entryButton);
 		 entryButton.addActionListener(this);
 		 

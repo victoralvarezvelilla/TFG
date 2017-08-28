@@ -40,9 +40,11 @@ public class DBConnection {
         return con;
   }
 
-      public void desconectar(){
+      public static void desconectar(){
         con = null;
-        System.out.println("conexion terminada");
+        idSesion = 0;
+        nameSesion = null;
+        LoginWindow login = new LoginWindow();
 
       }
 
@@ -198,6 +200,143 @@ public class DBConnection {
 			e.printStackTrace();
 		}
 		
+		
+	}
+
+
+
+	public static int insertarPlantilla(String nombre,int i) throws SQLException {
+	
+		String sentencia;
+		Statement st = con.createStatement();
+		int r;
+		int id = 0;
+	
+		sentencia = "insert into excels(IDCreador, NombrePlantilla) values ('"+i+"','"+nombre+"')";
+		r = st.executeUpdate(sentencia);
+		JOptionPane.showMessageDialog(null, "Plantilla Creada");
+		
+		Statement s = con.createStatement();
+		ResultSet rs = con.createStatement().executeQuery("SELECT * FROM excels WHERE NombrePlantilla = '" + nombre +"' ");
+	
+		if(rs.next()){
+			
+			id = rs.getInt("IDPlantilla");
+		}
+		
+		
+		return id;
+	}
+
+
+
+	public static void insertarValoresNuevos(String[] valoresAntiguos,String[] valoresNuevos, int idPlantilla) throws SQLException {
+	
+		String sentencia;
+		Statement st = con.createStatement();
+		int r;
+		int i = 0;
+		String [] antiguos = valoresAntiguos;
+		
+		
+		for( i = 0 ; i< antiguos.length; i++){
+			sentencia = "insert into valores(ValorAntiguo, ValorNuevo, IDRelativo) values ('"+valoresAntiguos[i]+"','"+valoresNuevos[i]+"','"+idPlantilla+"')";
+			r = st.executeUpdate(sentencia);
+			
+		}
+		
+	}
+
+
+
+	public static String[] llenarComboPatrones(int idUsuarioActual) {
+		
+		String [] combo = null;
+		if(getSesionRol() == false){
+			String sentencia;
+			sentencia = "SELECT * FROM excels";
+			
+			int i = 0;
+			try {
+				ResultSet rs =  con.createStatement().executeQuery(sentencia);
+				
+				
+				while (rs.next()){
+					i= i+1;
+				}
+				rs.beforeFirst();
+				combo = new String [i];
+				i = 0;
+				while (rs.next()){	
+					
+					combo[i] = rs.getString("NombrePlantilla");
+					i = i+1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}else {
+		
+		String sentencia;
+		sentencia = "SELECT * FROM excels WHERE IDCreador='"+idUsuarioActual+"' ";
+		int i = 0;
+		try {
+			ResultSet rs =  con.createStatement().executeQuery(sentencia);
+			
+			
+			while (rs.next()){
+				i= i+1;
+			}
+			rs.beforeFirst();
+			combo = new String [i];
+			i = 0;
+			while (rs.next()){	
+				
+				combo[i] = rs.getString("NombrePlantilla");
+				i = i+1;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+	
+		return combo;
+	}
+
+
+
+	public static void eliminarPlantilla(String nombre) throws SQLException {
+		
+		int idPlantilla = 0;
+		try {
+			Statement st = con.createStatement();
+			int r = st.executeUpdate("delete from excels where NombrePlantilla='"+nombre+"'");
+			UserMainWindow.vaciarCombo();
+			UserMainWindow.llenarCombo(idSesion);
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String sentencia;
+		sentencia = "SELECT * FROM excels WHERE NombrePlantilla='"+nombre+"' ";
+		ResultSet rs =  con.createStatement().executeQuery(sentencia);
+		while (rs.next()){	
+			idPlantilla = rs.getInt("IDPlantilla");
+		}
+		
+		try {
+			Statement st = con.createStatement();
+			int r = st.executeUpdate("delete from valores where IDRelativo='"+idPlantilla+"'");
+
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
