@@ -45,7 +45,8 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 
 	JFrame frame;
 	private JButton botonSeleccionar;
-	private JButton botonCrearExcell;
+	private JButton botonCrearPlantilla;
+	private JButton botonCrearExcel;
 	private JButton botonAdministrar;
 	private JButton botonEliminar;
 	private JButton botonCerrar;
@@ -79,7 +80,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 	UserMainWindow() throws FileNotFoundException{
 		
 		 frame = new JFrame();
-		 frame.setBounds(300, 200, 870, 650);
+		 frame.setBounds(300, 200, 870, 620);
 		 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 frame.setLocationRelativeTo(null);
 		 frame.setTitle("Menu ");
@@ -92,11 +93,17 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 		 frame.getContentPane().add(botonSeleccionar);
 		 botonSeleccionar.addActionListener(this);
 		 
-		 botonCrearExcell = new JButton("Componer");
-		 botonCrearExcell.setBounds(420, 250 , 105, 20);
-		 frame.getContentPane().add(botonCrearExcell);
-		 botonCrearExcell.addActionListener(this);
-		 botonCrearExcell.setVisible(true);
+		 botonCrearPlantilla = new JButton("Plantillas");
+		 botonCrearPlantilla.setBounds(320, 250 , 105, 20);
+		 frame.getContentPane().add(botonCrearPlantilla);
+		 botonCrearPlantilla.addActionListener(this);
+		 botonCrearPlantilla.setVisible(true);
+		 
+		 botonCrearExcel = new JButton("Matrices");
+		 botonCrearExcel.setBounds(620, 250 , 105, 20);
+		 frame.getContentPane().add(botonCrearExcel);
+		 botonCrearExcel.addActionListener(this);
+		 botonCrearExcel.setVisible(true);
 		 
 		 botonAdministrar = new JButton("Administrar");
 		 botonAdministrar.setBounds(20, 20 , 105 ,20);
@@ -163,7 +170,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 		 frame.getContentPane().add(hasta);
 		 
 		 JButton rango = new JButton("Añadir");
-		 rango.setBounds(370, 570, 100, 30);
+		 rango.setBounds(370, 555, 100, 30);
 		 frame.getContentPane().add(rango);
 		 rango.addActionListener(new ActionListener() {
 			
@@ -186,6 +193,8 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 
 					 }else if(rango2>pagina.getRow(0).getLastCellNum()){
 						 JOptionPane.showMessageDialog(null, "Error de rangos");
+					 }else if(rango1<1){
+						 JOptionPane.showMessageDialog(null, "Introduzca un número mayor que 0");
 					 }else{
 
 						 for (int i = rango1; i<rango2; i++ ){
@@ -265,11 +274,11 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 			 
 		
 		
-				
+				rutaExcell = "C:/Users/Usuario/Desktop/TFG/EX1.xlsx";
 				
 				FileInputStream file = null;
 				try {
-					file = new FileInputStream(new File("C:/Users/Usuario/Desktop/TFG/EX1.xlsx"));
+					file = new FileInputStream(new File(""+rutaExcell+""));
 				} catch (FileNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -349,11 +358,11 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 						int columna = table.rowAtPoint(e.getPoint());
 						int opcion = JOptionPane.showConfirmDialog(null, "¿Añadir columna a la matriz?");
 						
-						aniadirColumna(columna);
 						//indices.add(columna);
 						/* SI = 0 NO = 1 CANCEL = 2 */
 						if (opcion == 0){
-							
+							aniadirColumna(columna);
+
 							Vector<Integer> v = new Vector<Integer>();
 							v.add(columna+1);
 							modeloSelecionados.addRow(v);
@@ -473,6 +482,34 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 			}
 			
 		}
+		if (e.getSource() == botonCrearExcel){
+
+			String nombre = (String) combo.getSelectedItem();
+			if( nombre.equals("---Plantillas Disponibles---")){
+				JOptionPane.showMessageDialog(null, "Elija un patron");
+				return;
+			}else{
+				anonimizados =	anonimizar(nombres);
+				String nombrePlantilla = (String) combo.getSelectedItem();
+				int idPlantilla = 0;
+				try {
+					idPlantilla = DBConnection.devolverIDRelativo(nombrePlantilla);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				try {
+					matrixMenuWindow menuMatriz = new matrixMenuWindow(anonimizados, rutaExcell , indices, titulos, idPlantilla);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				indices.clear();
+				while(modeloSelecionados.getRowCount() > 0) modeloSelecionados.removeRow(0);
+			}
+		}
+		
+		
 		if(e.getSource() == botonAdministrar) {
 			AdminMainMenu menu = new AdminMainMenu();
 			frame.dispose();
@@ -495,10 +532,12 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 			DBConnection.desconectar();
 			frame.dispose();
 		}
-		if(e.getSource() == botonCrearExcell) {
+		if(e.getSource() == botonCrearPlantilla) {
 		
 			UserNewValuesWindow menuValores = new UserNewValuesWindow(wb, anonimizados,indices );
-			
+			while(modeloSelecionados.getRowCount() > 0) modeloSelecionados.removeRow(0);
+			indices.clear();
+
 		}
 	
 		

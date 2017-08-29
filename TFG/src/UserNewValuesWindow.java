@@ -152,7 +152,7 @@ public class UserNewValuesWindow extends JFrame implements ActionListener {
 			valoresNuevos = new String [ modelo.getRowCount()];
 			String nombre = textField.getText();
 			
-			if ( nombre == ""){
+			if ( textField.getText().length() == 0){
 					JOptionPane.showMessageDialog(null, "Introduzca un nombre a la plantilla");
 				
 			}else{ 

@@ -227,7 +227,37 @@ public class DBConnection {
 		
 		return id;
 	}
+	
+	public static int devolverIDRelativo (String nombrePlantilla) throws SQLException{
+		int id = 0;
+		Statement s = con.createStatement();
+		ResultSet rs = con.createStatement().executeQuery("SELECT * FROM excels WHERE NombrePlantilla = '" + nombrePlantilla +"' ");
+	
+		if(rs.next()){
+			
+			id = rs.getInt("IDPlantilla");
+		}
+		
+		
+		return id;
+	}
 
+	public static String cambiarValor (int idPlantilla, String valorViejo ) throws SQLException{
+		String valorNuevo = valorViejo;
+		
+		Statement s = con.createStatement();
+		ResultSet rs = con.createStatement().executeQuery("SELECT * FROM valores WHERE ValorAntiguo = '" + valorViejo + "' AND IDRelativo = '" + idPlantilla + "' ");
+	
+		if(rs.next()){
+			
+			valorNuevo = rs.getString("ValorNuevo");
+		}
+		
+		return valorNuevo;
+	}
+	
+	
+	
 
 
 	public static void insertarValoresNuevos(String[] valoresAntiguos,String[] valoresNuevos, int idPlantilla) throws SQLException {
@@ -311,6 +341,14 @@ public class DBConnection {
 	public static void eliminarPlantilla(String nombre) throws SQLException {
 		
 		int idPlantilla = 0;
+		
+		String sentencia;
+		sentencia = "SELECT * FROM excels WHERE NombrePlantilla='"+nombre+"' ";
+		ResultSet rs =  con.createStatement().executeQuery(sentencia);
+		while (rs.next()){	
+			idPlantilla = rs.getInt("IDPlantilla");
+		}
+		
 		try {
 			Statement st = con.createStatement();
 			int r = st.executeUpdate("delete from excels where NombrePlantilla='"+nombre+"'");
@@ -321,12 +359,7 @@ public class DBConnection {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String sentencia;
-		sentencia = "SELECT * FROM excels WHERE NombrePlantilla='"+nombre+"' ";
-		ResultSet rs =  con.createStatement().executeQuery(sentencia);
-		while (rs.next()){	
-			idPlantilla = rs.getInt("IDPlantilla");
-		}
+	
 		
 		try {
 			Statement st = con.createStatement();
