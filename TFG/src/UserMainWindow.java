@@ -50,7 +50,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 	private JButton botonAdministrar;
 	private JButton botonEliminar;
 	private JButton botonCerrar;
-	private JTextField textField;
+
 	private JTextField fieldUno;
 	private JTextField fieldDos;
 	private static DefaultComboBoxModel comboPatrones;
@@ -197,8 +197,8 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 						 JOptionPane.showMessageDialog(null, "Introduzca un número mayor que 0");
 					 }else{
 
-						 for (int i = rango1; i<rango2; i++ ){
-							 indices.add(i);
+						 for (int i = rango1-1; i<rango2-1; i++ ){
+							 indices.add(i+1);
 							 Vector<Integer> v = new Vector<Integer>();
 							 v.add(i+1);
 							 modeloSelecionados.addRow(v);
@@ -312,12 +312,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 					nombres[j-1] = fila.getCell(0).getStringCellValue(); 
 				}
 				anonimizados =	anonimizar(nombres);
-				try {
-					crearNuevoExcell(anonimizados);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+			
 			
 				for ( int k = 1; k < titulos.length; k++){
 					Vector<String> v = new Vector<String>();
@@ -376,12 +371,7 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 								//System.out.println(columnaAniadir[i-1]);
 							
 							}
-							try {
-								crearNuevoExcell(columnaAniadir);
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+						
 						}
 					}
 
@@ -465,12 +455,6 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 					nombres[j-1] = fila.getCell(0).getStringCellValue(); 
 				}
 				String[] anonimizados =	anonimizar(nombres);
-				try {
-					crearNuevoExcell(anonimizados);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			
 				for ( int k = 1; k < titulos.length; k++){
 					Vector<String> v = new Vector<String>();
@@ -543,19 +527,6 @@ public class UserMainWindow extends JFrame implements ActionListener  {
 		
 	}
 
-
-
-	private void crearNuevoExcell(String[] columna) throws IOException {
-	
-		for( int i = 0; i< columna.length; i++){
-			HSSFRow fila = hoja1.createRow(i);
-			HSSFCell celda = fila.createCell(contadorColumna);
-			celda.setCellValue(columna[i]);
-			
-		}
-		contadorColumna = contadorColumna +1;
-
-	}
 
 
 
